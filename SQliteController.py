@@ -1,4 +1,5 @@
 # manage SQLite database
+import os
 import sqlite3
 
 
@@ -9,7 +10,7 @@ class SQLiteController:
 
     def connect(self):
         try:
-            self.conn = sqlite3.connect(f"sqlite:///{self.db_path}")
+            self.conn = sqlite3.connect(f"{self.db_path}")
             print("Connected to the database")
         except sqlite3.Error as e:
             print(f"Error connecting to the database: {e}")

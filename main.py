@@ -8,7 +8,9 @@ from message import Message
 class MessageServer:
     def __init__(self):
         self.app = Flask(__name__)
-        self.messageRepo = MessageRepo(SQLiteController("messages.db"))
+        self.sqliteController = SQLiteController("messages.db")
+        self.sqliteController.connect()
+        self.messageRepo = MessageRepo(self.sqliteController)
 
         # Define routes
         self.app.route('/AddMessage', methods=['POST'])(self.add_message)
@@ -37,19 +39,18 @@ class MessageServer:
 
     def get_message(self):
         try:
-            param_type = request.args.get('param_type')
-            param_value = request.args.get('param_value')
-
-            if not param_type or not param_value:
+            if len(request.args) == 0:
                 return jsonify({'error': 'Missing required parameters: param_type and/or param_value'}), 400
+            elif len(request.args) != 1:
+                return jsonify({'error': 'Too many parameters'}), 400
 
             res_message = None
-            if param_type == 'applicationId':
-                res_message = self.messageRepo.get_by_application_id(param_value)
-            elif param_type == 'sessionId':
-                res_message = self.messageRepo.get_by_session_id(param_value)
-            elif param_type == 'messageId':
-                res_message = self.messageRepo.get_by_message_id(param_value)
+            if request.args.get('applicationId') is not None:
+                res_message = self.messageRepo.get_by_application_id(request.args.get('applicationId'))
+            elif request.args.get('sessionId') is not None:
+                res_message = self.messageRepo.get_by_session_id(request.args.get('sessionId'))
+            elif request.args.get('messageId') is not None:
+                res_message = self.messageRepo.get_by_message_id(request.args.get('messageId'))
 
             return jsonify(res_message.to_json())
         except Exception as e:
@@ -57,22 +58,24 @@ class MessageServer:
 
     def delete_message(self):
         try:
-            param_type = request.args.get('param_type')
-            param_value = request.args.get('param_value')
-
-            if not param_type or not param_value:
+            if len(request.args) == 0:
                 return jsonify({'error': 'Missing required parameters: param_type and/or param_value'}), 400
+            elif len(request.args) != 1:
+                return jsonify({'error': 'Too many parameters'}), 400
 
-            if param_type == 'applicationId':
-                self.messageRepo.delete_by_application_id(param_value)
-            elif param_type == 'sessionId':
-                self.messageRepo.delete_by_session_id(param_value)
-            elif param_type == 'messageId':
-                self.messageRepo.delete_by_message_id(param_value)
+            res_message = None
+            if request.args.get('applicationId') is not None:
+                self.messageRepo.delete_by_application_id(request.args.get('applicationId'))
+            elif request.args.get('sessionId') is not None:
+                self.messageRepo.delete_by_session_id(request.args.get('sessionId'))
+            elif request.args.get('messageId') is not None:
+                self.messageRepo.delete_by_message_id(request.args.get('messageId'))
 
             return jsonify({'message': 'Messages deleted successfully'})
         except Exception as e:
             return jsonify({'error': str(e)}), 500
+    def __del__(self):
+        self.sqliteController.disconnect()
 
 
 if __name__ == '__main__':
