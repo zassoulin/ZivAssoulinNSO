@@ -51,7 +51,8 @@ class MessageServer:
                 res_message = self.messageRepo.get_by_session_id(request.args.get('sessionId'))
             elif request.args.get('messageId') is not None:
                 res_message = self.messageRepo.get_by_message_id(request.args.get('messageId'))
-
+            if res_message is None:
+                return jsonify({'error': 'Message not found'}), 404
             return jsonify(res_message.to_json())
         except Exception as e:
             return jsonify({'error': str(e)}), 500

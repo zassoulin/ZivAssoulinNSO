@@ -10,7 +10,11 @@ class SQLiteController:
 
     def connect(self):
         try:
-            self.conn = sqlite3.connect(f"{self.db_path}")
+            self.conn = sqlite3.connect(f"{self.db_path}" , check_same_thread=False)#flask runs by defualt on multiple threads,in sqlite3 when running on multiple threads race conditions may occur when trying to insert
+            # data into the database with same unique Id, there are a couple of ways to solve this such as running
+            # flask on single thread,creating a sql connection on each request or setting check_same_thread=False
+            # prevents this from happening(there are other possible solutions) I have chosen the last option as
+            # usually in databases it is a best practice to keep 1 connection alive for the entire application.
             print("Connected to the database")
         except sqlite3.Error as e:
             print(f"Error connecting to the database: {e}")
@@ -50,7 +54,8 @@ class SQLiteController:
                 query += f" WHERE {condition}"
             cursor.execute(query)
             data = cursor.fetchall()
-            return data
+            field_names = [desc[0] for desc in cursor.description]
+            return data , field_names
         except sqlite3.Error as e:
             print(f"Error executing select query: {e}")
             return None
