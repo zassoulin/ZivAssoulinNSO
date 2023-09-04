@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 
+from SQLException import SQLException
 from SQliteController import SQLiteController
 from messageRepo import MessageRepo
 from message import Message
@@ -34,6 +35,8 @@ class MessageServer:
                               data['content'])
             self.messageRepo.insert(message)
             return jsonify({'message': 'Message added successfully'}), 201
+        except SQLException as e:
+            return jsonify({'error': str(e)}), 400
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
@@ -54,6 +57,8 @@ class MessageServer:
             if res_message is None:
                 return jsonify({'error': 'Message not found'}), 404
             return jsonify(res_message)
+        except SQLException as e:
+            return jsonify({'error': str(e)}), 400
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
@@ -73,8 +78,11 @@ class MessageServer:
                 self.messageRepo.delete_by_message_id(request.args.get('messageId'))
 
             return jsonify({'message': 'Messages deleted successfully'})
-        except Exception as e:
-            return jsonify({'error': str(e)}), 500
+        except SQLException as e:
+            return jsonify({'error': str(e)}), 400
+        except Exception:
+            return jsonify({'Internal Server error'}), 500  # return 500 for any other exception with no debug info
+
     def __del__(self):
         self.sqliteController.disconnect()
 
