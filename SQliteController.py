@@ -19,14 +19,14 @@ class SQLiteController:
             # usually in databases it is a best practice to keep 1 connection alive for the entire application.
             print("Connected to the database")
         except sqlite3.Error as e:
-            print(f"Error connecting to the database: {e}")
+            raise SQLException(f"Error connecting to the database")
 
     def disconnect(self):
         try:
             self.conn.close()
             print("Disconnected from the database")
         except sqlite3.Error as e:
-            print(f"Error disconnecting from the database: {e}")
+            raise SQLException(f"Error disconnecting from the database")
 
     def create_table(self, table_name, columns):
         try:
