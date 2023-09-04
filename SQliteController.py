@@ -29,8 +29,22 @@ class SQLiteController:
             print(f"Table {table_name} created")
         except sqlite3.Error as e:
             print(f"Error creating table {table_name}: {e}")
-
-    def init_database(self):
-        self.connect()
-        self.create_table("messages", "message_id TEXT PRIMARY KEY,application_id INTEGER NOT NULL,session_id TEXT "
-                                      "NOT NULL,participants TEXT NOT NULL,content TEXT NOT NULL")
+    def insert(self, table_name, record):
+        try:
+            self.conn.execute(f"INSERT INTO {table_name} VALUES {record}")
+            self.conn.commit()
+            print(f"Record {record} inserted into table {table_name}")
+        except sqlite3.Error as e:
+            print(f"Error inserting record {record} into table {table_name}: {e}")
+    def select(self, table_name, columns="*", condition=None):
+        try:
+            cursor = self.conn.cursor()
+            query = f"SELECT {columns} FROM {table_name}"
+            if condition:
+                query += f" WHERE {condition}"
+            cursor.execute(query)
+            data = cursor.fetchall()
+            return data
+        except sqlite3.Error as e:
+            print(f"Error executing select query: {e}")
+            return None
