@@ -1,6 +1,7 @@
 import sqlite3
 import pytest
 
+from SQLException import SQLException
 from SQliteController import SQLiteController
 
 
@@ -8,15 +9,6 @@ class TestSQLiteController:
     # Define class variables for table name and columns
     TEST_TABLE_NAME = "test_users_table"
     TEST_TABLE_COLUMNS = "id INTEGER PRIMARY KEY, name TEXT"
-
-    @pytest.fixture
-    def sqlite_controller(self):
-        conn = sqlite3.connect(":memory:")
-        controller = SQLiteController(":memory:")
-        controller.connect()
-        yield controller
-        controller.disconnect()
-        conn.close()
 
     def test_create_table(self, sqlite_controller):
         sqlite_controller.create_table(self.TEST_TABLE_NAME, self.TEST_TABLE_COLUMNS)  # can be extracted to a fixture
@@ -56,3 +48,7 @@ class TestSQLiteController:
         assert len(field_names) == 2
         assert field_names == ["id", "name"]
         assert set(data) == {(1, "ziv")}
+
+    def test_execute_invalid_sql_query(self, sqlite_controller):
+        with pytest.raises(SQLException):  # test for invalid sql query
+            sqlite_controller.select("invalid_table")

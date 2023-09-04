@@ -23,3 +23,5 @@ class Message:
         self.participants = json.loads(json_data["participants"])
         self.content = json_data["content"]
         return self
+    def __eq__(self, other):
+        return self.message_id == other.message_id and self.application_id == other.application_id and self.session_id == other.session_id and self.participants == other.participants and self.content == other.content

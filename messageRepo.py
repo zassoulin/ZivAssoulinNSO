@@ -23,7 +23,7 @@ class MessageRepo:
 
     # creating 3 different methods instead of one with optional parameters to make the code more readable
     def get_by_application_id(self, application_id):
-        # get the message by application id
+        # get the messages by application id
         messages_data, field_names = self.SQliteController.select("messages", "*", f"application_id={application_id}")
         if messages_data is None:
             return []  # return empty list if no messages found
@@ -31,7 +31,7 @@ class MessageRepo:
                 messages_data]
 
     def get_by_session_id(self, session_id):
-        # get the message by session id
+        # get the messages by session id
         messages_data, field_names = self.SQliteController.select("messages", "*", f"session_id='{session_id}'")
         if messages_data is None:
             return []  # return empty list if no messages found
@@ -39,7 +39,7 @@ class MessageRepo:
                 messages_data]
 
     def get_by_message_id(self, message_id):
-        # get the message by message id
+        # get the messages by message id
         messages_data, field_names = self.SQliteController.select("messages", "*", f"message_id='{message_id}'")
         if messages_data is None:
             return []  # return empty list if no messages found
@@ -65,11 +65,3 @@ class MessageRepo:
                           values[field_names.index("content")]if "content" in field_names else None)
         return message
 
-
-if __name__ == '__main__':
-    sqls = SQLiteController("test.db")
-    sqls.connect()
-    MessageRepo = MessageRepo(sqls)
-    MessageRepo.insert(Message("5", 5, "4", [1, 2], "5"))
-    print(MessageRepo.get_by_message_id(5)[0])
-    sqls.disconnect()
