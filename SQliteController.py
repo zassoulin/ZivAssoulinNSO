@@ -28,13 +28,20 @@ class SQLiteController:
             print(f"Table {table_name} created")
         except sqlite3.Error as e:
             print(f"Error creating table {table_name}: {e}")
+
     def insert(self, table_name, record):
         try:
-            self.conn.execute(f"INSERT INTO {table_name} VALUES {record}")
+            columns = ', '.join(record.keys())
+            placeholders = ', '.join(['?'] * len(record))
+            values = tuple(record.values())
+
+            query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
+            self.conn.execute(query, values)
             self.conn.commit()
-            print(f"Record {record} inserted into table {table_name}")
+            print(f"Record inserted into table {table_name}")
         except sqlite3.Error as e:
-            print(f"Error inserting record {record} into table {table_name}: {e}")
+            print(f"Error inserting data into table {table_name}: {e}")
+
     def select(self, table_name, columns="*", condition=None):
         try:
             cursor = self.conn.cursor()
@@ -47,7 +54,8 @@ class SQLiteController:
         except sqlite3.Error as e:
             print(f"Error executing select query: {e}")
             return None
-    #add delete method
+
+    # add delete method
     def delete(self, table_name, condition=None):
         try:
             cursor = self.conn.cursor()

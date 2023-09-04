@@ -1,11 +1,12 @@
+from SQliteController import SQLiteController
 from message import Message
 
 
 class MessageRepo:
     # class uses the SQliteController to store and retrieve messages
     # initialize the message repository
-    def __init__(self, SQliteController):
-        self.SQliteController = SQliteController
+    def __init__(self, SQLiteController):
+        self.SQliteController = SQLiteController
         self.init_database()
 
     def init_database(self):
@@ -39,3 +40,11 @@ class MessageRepo:
         self.SQliteController.delete("messages", f"session_id='{session_id}'")
     def delete_by_application_id(self, application_id):
         self.SQliteController.delete("messages", f"application_id={application_id}")
+
+if __name__ == '__main__':
+    sqls = SQLiteController("test.db")
+    sqls.connect()
+    MessageRepo = MessageRepo(sqls)
+    MessageRepo.insert(Message("1", 1, "1", "1", "1"))
+    MessageRepo.insert(Message("2", 2, "2", "2", "2"))
+    sqls.disconnect()
