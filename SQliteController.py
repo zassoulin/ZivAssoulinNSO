@@ -2,6 +2,8 @@
 import os
 import sqlite3
 
+from SQLException import SQLException
+
 
 class SQLiteController:
     def __init__(self, db_path):
@@ -31,7 +33,7 @@ class SQLiteController:
             self.conn.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({columns})")
             print(f"Table {table_name} created")
         except sqlite3.Error as e:
-            print(f"Error creating table {table_name}: {e}")
+            raise SQLException(f"Error creating table {table_name}")
 
     def insert(self, table_name, record):
         try:
@@ -43,8 +45,10 @@ class SQLiteController:
             self.conn.execute(query, values)
             self.conn.commit()
             print(f"Record inserted into table {table_name}")
+        except sqlite3.IntegrityError as e:
+            raise SQLException(f"Error inserting record into table invalid data unique id already exists")
         except sqlite3.Error as e:
-            print(f"Error inserting data into table {table_name}: {e}")
+            raise SQLException(f"Error executing insert query")
 
     def select(self, table_name, columns="*", condition=None):
         try:
@@ -57,8 +61,7 @@ class SQLiteController:
             field_names = [desc[0] for desc in cursor.description]
             return data , field_names
         except sqlite3.Error as e:
-            print(f"Error executing select query: {e}")
-            return None
+            raise SQLException(f"Error executing select query")
 
     # add delete method
     def delete(self, table_name, condition=None):
@@ -71,5 +74,4 @@ class SQLiteController:
             self.conn.commit()
             print(f"Record deleted from table {table_name}")
         except sqlite3.Error as e:
-            print(f"Error executing delete query: {e}")
-            return None
+            raise SQLException(f"Error executing delete query")

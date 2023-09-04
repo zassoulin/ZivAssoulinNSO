@@ -1,3 +1,5 @@
+import json
+
 from SQliteController import SQLiteController
 from message import Message
 
@@ -41,7 +43,7 @@ class MessageRepo:
         messages_data, field_names = self.SQliteController.select("messages", "*", f"message_id='{message_id}'")
         if messages_data is None:
             return []  # return empty list if no messages found
-        return [self.create_message_from_values_and_fields_names(message_data[0], field_names) for message_data in
+        return [self.create_message_from_values_and_fields_names(message_data, field_names) for message_data in
                 messages_data]
 
     def delete_by_message_id(self, message_id):
@@ -54,12 +56,13 @@ class MessageRepo:
         self.SQliteController.delete("messages", f"application_id={application_id}")
 
     def create_message_from_values_and_fields_names(self, values, field_names):
-        """creates a message from values and field names inorder to make the order of the values irrelevant"""
-        message = Message(values[field_names.index("message_id")],
-                          values[field_names.index("application_id")],
-                          values[field_names.index("session_id")],
-                          values[field_names.index("participants")],
-                          values[field_names.index("content")])
+        """creates a message from values and field names inorder to make the order of the values irrelevant
+        if field is not found it will be None"""
+        message = Message(values[field_names.index("message_id")] if "message_id" in field_names else None,
+                          values[field_names.index("application_id")] if "application_id" in field_names else None,
+                          values[field_names.index("session_id") ]if "session_id" in field_names else None,
+                          json.loads(values[field_names.index("participants")]) if "participants" in field_names else None,
+                          values[field_names.index("content")]if "content" in field_names else None)
         return message
 
 
@@ -68,5 +71,5 @@ if __name__ == '__main__':
     sqls.connect()
     MessageRepo = MessageRepo(sqls)
     MessageRepo.insert(Message("5", 5, "4", [1, 2], "5"))
-    print(MessageRepo.get_by_message_id(5))
+    print(MessageRepo.get_by_message_id(5)[0])
     sqls.disconnect()
