@@ -12,7 +12,7 @@ class MessageRepo:
     def init_database(self):
         # create the messages table if it does not exist
         self.SQliteController.create_table("messages",
-                                           "message_id TEXT PRIMARY KEY,application_id INTEGER NOT NULL,session_id TEXT "
+                                           "message_id TEXT PRIMARY KEY,application_id INTEGER NOT NULL,session_id TEXT UNIQUE"
                                            "NOT NULL,participants TEXT NOT NULL,content TEXT NOT NULL")
 
     def insert(self, message: Message):
@@ -22,24 +22,27 @@ class MessageRepo:
     # creating 3 different methods instead of one with optional parameters to make the code more readable
     def get_by_application_id(self, application_id):
         # get the message by application id
-        message_data, field_names = self.SQliteController.select("messages", "*", f"application_id={application_id}")
-        if message_data is None:
-            return None
-        return self.create_message_from_values_and_fields_names(message_data[0], field_names)
+        messages_data, field_names = self.SQliteController.select("messages", "*", f"application_id={application_id}")
+        if messages_data is None:
+            return []  # return empty list if no messages found
+        return [self.create_message_from_values_and_fields_names(message_data[0], field_names) for message_data in
+                messages_data]
 
     def get_by_session_id(self, session_id):
         # get the message by session id
-        message_data, field_names = self.SQliteController.select("messages", "*", f"session_id='{session_id}'")
-        if message_data is None:
-            return None
-        return self.create_message_from_values_and_fields_names(message_data[0], field_names)
+        messages_data, field_names = self.SQliteController.select("messages", "*", f"session_id='{session_id}'")
+        if messages_data is None:
+            return []  # return empty list if no messages found
+        return [self.create_message_from_values_and_fields_names(message_data[0], field_names) for message_data in
+                messages_data]
 
     def get_by_message_id(self, message_id):
         # get the message by message id
-        message_data, field_names = self.SQliteController.select("messages", "*", f"message_id='{message_id}'")
-        if message_data is None:
-            return None
-        return self.create_message_from_values_and_fields_names(message_data[0],field_names)
+        messages_data, field_names = self.SQliteController.select("messages", "*", f"message_id='{message_id}'")
+        if messages_data is None:
+            return []  # return empty list if no messages found
+        return [self.create_message_from_values_and_fields_names(message_data[0], field_names) for message_data in
+                messages_data]
 
     def delete_by_message_id(self, message_id):
         self.SQliteController.delete("messages", f"message_id='{message_id}'")
