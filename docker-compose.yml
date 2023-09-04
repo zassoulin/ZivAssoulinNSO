@@ -1,0 +1,10 @@
+version: '3'
+services:
+  sqlite-container:
+    image: alpine
+    container_name: sqlite-container
+    volumes:
+      - ./data:/data
+    ports:
+      - "8000:8000"  # Map host port 8000 to container port 8000
+    command: sh -c "apk add sqlite && sqlite3 /data/mydb.sqlite"

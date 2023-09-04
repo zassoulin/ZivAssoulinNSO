@@ -1,16 +1,14 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from flask import Flask
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    app = Flask(__name__)
+    app.run(debug=True)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+#build a flask service to handle the request POST / AddMessage
+def add_message():
+    pass
+#build a flask service to handle the request GET / GetMessages
+#build a flask service to handle the request GET / GetMessageById
+#build a flask service to handle the request PUT / UpdateMessage
+#build a flask service to handle the request DELETE / DeleteMessage
