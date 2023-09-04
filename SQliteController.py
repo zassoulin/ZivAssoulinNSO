@@ -3,15 +3,13 @@ import sqlite3
 
 
 class SQLiteController:
-    def __init__(self, db_host, db_port, db_path):
-        self.db_host = db_host
-        self.db_port = db_port
+    def __init__(self, db_path):
         self.db_path = db_path
         self.conn = None
 
     def connect(self):
         try:
-            self.conn = sqlite3.connect(f"sqlite://{self.db_host}:{self.db_port}/{self.db_path}")
+            self.conn = sqlite3.connect(f"sqlite:///{self.db_path}")
             print("Connected to the database")
         except sqlite3.Error as e:
             print(f"Error connecting to the database: {e}")

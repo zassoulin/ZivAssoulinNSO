@@ -6,7 +6,6 @@ class MessageRepo:
     # initialize the message repository
     def __init__(self, SQliteController):
         self.SQliteController = SQliteController
-        self.SQliteController.init_database()
         self.init_database()
 
     def init_database(self):
