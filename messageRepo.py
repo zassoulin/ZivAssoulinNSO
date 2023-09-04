@@ -27,7 +27,7 @@ class MessageRepo:
         messages_data, field_names = self.SQliteController.select("messages", "*", f"application_id={application_id}")
         if messages_data is None:
             return []  # return empty list if no messages found
-        return [self.create_message_from_values_and_fields_names(message_data[0], field_names) for message_data in
+        return [self.create_message_from_values_and_fields_names(message_data, field_names) for message_data in
                 messages_data]
 
     def get_by_session_id(self, session_id):
@@ -35,7 +35,7 @@ class MessageRepo:
         messages_data, field_names = self.SQliteController.select("messages", "*", f"session_id='{session_id}'")
         if messages_data is None:
             return []  # return empty list if no messages found
-        return [self.create_message_from_values_and_fields_names(message_data[0], field_names) for message_data in
+        return [self.create_message_from_values_and_fields_names(message_data, field_names) for message_data in
                 messages_data]
 
     def get_by_message_id(self, message_id):

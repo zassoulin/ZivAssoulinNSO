@@ -38,7 +38,8 @@ class MessageServer:
         except SQLException as e:
             return jsonify({'error': str(e)}), 400
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
+            return jsonify(
+                {'error': 'Internal Server error'}), 500  # return 500 for any other exception with no debug info
 
     def get_message(self):
         try:
@@ -47,20 +48,21 @@ class MessageServer:
             elif len(request.args) != 1:
                 return jsonify({'error': 'Too many parameters'}), 400
 
-            res_message = None
+            res_messages = None
             if request.args.get('applicationId') is not None:
-                res_message = self.messageRepo.get_by_application_id(request.args.get('applicationId'))
+                res_messages = self.messageRepo.get_by_application_id(request.args.get('applicationId'))
             elif request.args.get('sessionId') is not None:
-                res_message = self.messageRepo.get_by_session_id(request.args.get('sessionId'))
+                res_messages = self.messageRepo.get_by_session_id(request.args.get('sessionId'))
             elif request.args.get('messageId') is not None:
-                res_message = self.messageRepo.get_by_message_id(request.args.get('messageId'))
-            if res_message is None:
+                res_messages = self.messageRepo.get_by_message_id(request.args.get('messageId'))
+            if res_messages is None:
                 return jsonify({'error': 'Message not found'}), 404
-            return jsonify(res_message)
+            return jsonify({'message': [res_message.to_json() for res_message in res_messages]})
         except SQLException as e:
             return jsonify({'error': str(e)}), 400
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
+            return jsonify(
+                {'error': 'Internal Server error'}), 500  # return 500 for any other exception with no debug info
 
     def delete_message(self):
         try:
@@ -81,7 +83,8 @@ class MessageServer:
         except SQLException as e:
             return jsonify({'error': str(e)}), 400
         except Exception:
-            return jsonify({'Internal Server error'}), 500  # return 500 for any other exception with no debug info
+            return jsonify(
+                {'error': 'Internal Server error'}), 500  # return 500 for any other exception with no debug info
 
     def __del__(self):
         self.sqliteController.disconnect()
