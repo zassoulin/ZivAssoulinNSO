@@ -34,3 +34,9 @@ class MessageRepo:
         # get the message by message id
         message = self.SQliteController.select("messages", "*", f"message_id='{message_id}'")
         return Message.from_json(message[0]) if message else None
+    def delete_by_message_id(self, message_id):
+        self.SQliteController.delete("messages", f"message_id='{message_id}'")
+    def delete_by_session_id(self, session_id):
+        self.SQliteController.delete("messages", f"session_id='{session_id}'")
+    def delete_by_application_id(self, application_id):
+        self.SQliteController.delete("messages", f"application_id={application_id}")

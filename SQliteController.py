@@ -48,3 +48,16 @@ class SQLiteController:
         except sqlite3.Error as e:
             print(f"Error executing select query: {e}")
             return None
+    #add delete method
+    def delete(self, table_name, condition=None):
+        try:
+            cursor = self.conn.cursor()
+            query = f"DELETE FROM {table_name}"
+            if condition:
+                query += f" WHERE {condition}"
+            cursor.execute(query)
+            self.conn.commit()
+            print(f"Record deleted from table {table_name}")
+        except sqlite3.Error as e:
+            print(f"Error executing delete query: {e}")
+            return None
