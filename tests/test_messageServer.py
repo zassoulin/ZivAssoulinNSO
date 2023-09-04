@@ -43,3 +43,7 @@ class TestMessageServer:
         message_server.app.test_client().post('/AddMessage', json=json_data)
         response = message_server.app.test_client().post('/AddMessage', json=json_data)
         assert response.status_code == 400
+    def test_message_not_found(self, message_server):
+        response = message_server.app.test_client().get('/GetMessage?applicationId=1')
+        assert response.status_code == 200
+        assert response.json['message'] == [], "Error message was not deleted"
