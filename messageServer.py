@@ -7,9 +7,12 @@ from message import Message
 
 
 class MessageServer:
-    def __init__(self):
+    def __init__(self, sqliteController = None):
         self.app = Flask(__name__)
-        self.sqliteController = SQLiteController("messages.db")
+        if sqliteController is None:
+            self.sqliteController = SQLiteController("messages.db")
+        else:
+            self.sqliteController = sqliteController
         self.sqliteController.connect()
         self.messageRepo = MessageRepo(self.sqliteController)
 

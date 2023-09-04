@@ -64,4 +64,3 @@ class MessageRepo:
                           json.loads(values[field_names.index("participants")]) if "participants" in field_names else None,
                           values[field_names.index("content")]if "content" in field_names else None)
         return message
-
