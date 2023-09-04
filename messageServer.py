@@ -7,7 +7,9 @@ from message import Message
 
 
 class MessageServer:
+    """Flask Server responsible for handling requests to the message database"""
     def __init__(self, sqliteController = None):
+        """Initialize the server and connect to the database"""
         self.app = Flask(__name__)
         if sqliteController is None:
             self.sqliteController = SQLiteController("messages.db")
@@ -25,6 +27,8 @@ class MessageServer:
         self.app.run(host=host, port=port)
 
     def add_message(self):
+        """rest endpoint for adding a message to the database receives a json body.
+        returns 201 for success and 400 for bad request"""
         try:
             data = request.get_json()
 
@@ -45,6 +49,9 @@ class MessageServer:
                 {'error': 'Internal Server error'}), 500  # return 500 for any other exception with no debug info
 
     def get_message(self):
+        """rest endpoint for getting a message from the database return a list of messages. with json format
+        messages can be filtered by applicationId, sessionId or messageId
+        returns 200 for success and 400 for bad request"""
         try:
             if len(request.args) == 0:
                 return jsonify({'error': 'Missing required parameters: param_type and/or param_value'}), 400
@@ -68,6 +75,8 @@ class MessageServer:
                 {'error': 'Internal Server error'}), 500  # return 500 for any other exception with no debug info
 
     def delete_message(self):
+        """deletes a message from the database. messages can be filtered by applicationId, sessionId or messageId
+        returns 200 for success and 400 for bad request"""
         try:
             if len(request.args) == 0:
                 return jsonify({'error': 'Missing required parameters: param_type and/or param_value'}), 400

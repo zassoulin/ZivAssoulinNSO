@@ -6,11 +6,13 @@ from SQLException import SQLException
 
 
 class SQLiteController:
+    """Class to manage SQLite database"""
     def __init__(self, db_path):
         self.db_path = db_path
         self.conn = None
 
     def connect(self):
+        """Connect to the SQLite database"""
         try:
             self.conn = sqlite3.connect(f"{self.db_path}" , check_same_thread=False)#flask runs by defualt on multiple threads,in sqlite3 when running on multiple threads race conditions may occur when trying to insert
             # data into the database with same unique Id, there are a couple of ways to solve this such as running
@@ -22,6 +24,7 @@ class SQLiteController:
             raise SQLException(f"Error connecting to the database")
 
     def disconnect(self):
+        """Disconnect from the SQLite database"""
         try:
             self.conn.close()
             print("Disconnected from the database")
@@ -29,6 +32,9 @@ class SQLiteController:
             raise SQLException(f"Error disconnecting from the database")
 
     def create_table(self, table_name, columns):
+        """Creates a table in the database
+        :param table_name: the name of the table to create
+        :param columns: the columns of the table to create"""
         try:
             self.conn.execute(f"CREATE TABLE IF NOT EXISTS {table_name} ({columns})")
             print(f"Table {table_name} created")
@@ -36,6 +42,9 @@ class SQLiteController:
             raise SQLException(f"Error creating table {table_name}")
 
     def insert(self, table_name, record):
+        """Inserts a record into the database
+        :param table_name: the name of the table to insert the record into
+        :param record: the record to insert as a dictionary of column name and value"""
         try:
             columns = ', '.join(record.keys())
             placeholders = ', '.join(['?'] * len(record))
@@ -51,6 +60,10 @@ class SQLiteController:
             raise SQLException(f"Error executing insert query")
 
     def select(self, table_name, columns="*", condition=None):
+        """Selects records from the database
+        :param table_name: the name of the table to select from
+        :param columns: the columns to select
+        :param condition: the condition to filter the records by"""
         try:
             cursor = self.conn.cursor()
             query = f"SELECT {columns} FROM {table_name}"
@@ -65,6 +78,9 @@ class SQLiteController:
 
     # add delete method
     def delete(self, table_name, condition=None):
+        """Deletes records from the database
+        :param table_name: the name of the table to delete from
+        :param condition: the condition to filter the records by"""
         try:
             cursor = self.conn.cursor()
             query = f"DELETE FROM {table_name}"
